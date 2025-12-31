@@ -3,7 +3,7 @@
 
 // const addProduct = async (req, res) => {
 //   try {
-//     const { name, description, price, category, subCategory, sizes, bestSeller, stock } = req.body;
+//     const { name, description, price, category, subCategory, sizes, bestSeller, stock, discountPercent, discountExpiry } = req.body;
 
 //     const image1 = req.files.image1 && req.files.image1[0];
 //     const image2 = req.files.image2 && req.files.image2[0];
@@ -30,6 +30,9 @@
 //       stock: Number(stock),
 //       image: imageUrls,
 //       date: Date.now(),
+//       discountPercent: Number(discountPercent) || 0,
+//       discountExpiry: discountExpiry ? new Date(discountExpiry) : null,
+//       hasDiscount: Number(discountPercent) > 0 && discountExpiry ? true : false,
 //     };
 
 //     const product = new productModel(productData);
@@ -84,7 +87,27 @@
 //   }
 // };
 
-// export { addProduct, listProducts, removeProduct, getSingleProduct, updateStock };
+// const updateDiscount = async (req, res) => {
+//   try {
+//     const { productId, discountPercent, discountExpiry } = req.body;
+    
+//     const updateData = {
+//       discountPercent: Number(discountPercent),
+//       discountExpiry: discountExpiry ? new Date(discountExpiry) : null,
+//       hasDiscount: Number(discountPercent) > 0 && discountExpiry ? true : false,
+//     };
+    
+//     await productModel.findByIdAndUpdate(productId, updateData);
+    
+//     res.status(200).json({ success: true, message: "Discount updated" });
+//   } catch (error) {
+//     console.log("Error while updating discount: ", error);
+//     res.status(500).json({ success: false, message: error.message });
+//   }
+// };
+
+// export { addProduct, listProducts, removeProduct, getSingleProduct, updateStock, updateDiscount };
+
 
 
 
@@ -94,7 +117,7 @@ import productModel from "../models/productModel.js";
 
 const addProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subCategory, sizes, bestSeller, stock, discountPercent, discountExpiry } = req.body;
+    const { name, description, price, category, subCategory, sizes, bestSeller, stock, discountPercent, discountExpiry, sizeType } = req.body;
 
     const image1 = req.files.image1 && req.files.image1[0];
     const image2 = req.files.image2 && req.files.image2[0];
@@ -124,6 +147,7 @@ const addProduct = async (req, res) => {
       discountPercent: Number(discountPercent) || 0,
       discountExpiry: discountExpiry ? new Date(discountExpiry) : null,
       hasDiscount: Number(discountPercent) > 0 && discountExpiry ? true : false,
+      sizeType: sizeType || 'standard'
     };
 
     const product = new productModel(productData);

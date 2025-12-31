@@ -196,9 +196,7 @@
 //             <option value="Bottomwear">Bottomwear</option>
 //             <option value="Winterwear">Winterwear</option>
 //             <option value="Summerwear">Summerwear</option>
-//             <option value="Formal Shoes">Formal Shoes</option>
-//             <option value="Loafers">Loafers</option>
-//             <option value="Slippers">Slippers</option>
+//             <option value="Footwear">Footwear</option>
 //           </select>
 //         </div>
 //       </div>
@@ -332,6 +330,8 @@
 
 
 
+
+
 import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import axios from "axios";
@@ -355,6 +355,23 @@ const Add = ({ token }) => {
   const [discountPercent, setDiscountPercent] = useState("");
   const [discountExpiry, setDiscountExpiry] = useState("");
 
+  // Footwear sizes with UK and EU
+  const footwearSizes = [
+    { uk: 5, eu: 38 },
+    { uk: 6, eu: 39 },
+    { uk: 7, eu: 40 },
+    { uk: 8, eu: 42 },
+    { uk: 9, eu: 43 },
+    { uk: 10, eu: 44 },
+    { uk: 11, eu: 45 },
+    { uk: 12, eu: 46 }
+  ];
+
+  const standardSizes = ["S", "M", "L", "XL", "XXL"];
+
+  const isFootwear = subCategory === "Footwear";
+  const availableSizes = isFootwear ? footwearSizes : standardSizes;
+
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -375,6 +392,7 @@ const Add = ({ token }) => {
       formData.append("bestSeller", bestSeller);
       formData.append("discountPercent", discountPercent || 0);
       formData.append("discountExpiry", discountExpiry || "");
+      formData.append("sizeType", isFootwear ? "footwear" : "standard");
 
       const response = await axios.post(
         backendUrl + "/api/product/add",
@@ -409,6 +427,23 @@ const Add = ({ token }) => {
     setBestSeller(false);
     setDiscountPercent("");
     setDiscountExpiry("");
+  };
+
+  const toggleSize = (size) => {
+    if (isFootwear) {
+      const sizeString = `UK ${size.uk} / EU ${size.eu}`;
+      setSizes((prev) =>
+        prev.includes(sizeString)
+          ? prev.filter((item) => item !== sizeString)
+          : [...prev, sizeString]
+      );
+    } else {
+      setSizes((prev) =>
+        prev.includes(size)
+          ? prev.filter((item) => item !== size)
+          : [...prev, size]
+      );
+    }
   };
 
   return (
@@ -520,7 +555,10 @@ const Add = ({ token }) => {
         <div>
           <p className="mb-2 text-lg font-semibold">Product Sub Category</p>
           <select
-            onChange={(e) => setSubCategory(e.target.value)}
+            onChange={(e) => {
+              setSubCategory(e.target.value);
+              setSizes([]); // Reset sizes when subcategory changes
+            }}
             value={subCategory}
             className="w-full px-3 py-2 border-gray-500 max-w-[500px]"
             required
@@ -598,30 +636,48 @@ const Add = ({ token }) => {
       </div>
 
       <div>
-        <p className="mb-2 text-lg font-semibold">Product Sizes</p>
-        <div className="flex gap-3">
-          {["S", "M", "L", "XL", "XXL"].map((size) => (
-            <div
-              key={size}
-              onClick={() =>
-                setSizes((prev) =>
-                  prev.includes(size)
-                    ? prev.filter((item) => item !== size)
-                    : [...prev, size]
-                )
-              }
-            >
-              <p
-                className={`${
-                  sizes.includes(size)
-                    ? "bg-gray-500 text-white rounded-md"
-                    : "bg-slate-200"
-                } px-3 py-1 cursor-pointer`}
+        <p className="mb-2 text-lg font-semibold">
+          Product Sizes {isFootwear && "(UK / EU)"}
+        </p>
+        <div className="flex gap-3 flex-wrap">
+          {isFootwear ? (
+            footwearSizes.map((size) => {
+              const sizeString = `UK ${size.uk} / EU ${size.eu}`;
+              return (
+                <div
+                  key={sizeString}
+                  onClick={() => toggleSize(size)}
+                >
+                  <p
+                    className={`${
+                      sizes.includes(sizeString)
+                        ? "bg-gray-500 text-white rounded-md"
+                        : "bg-slate-200"
+                    } px-3 py-1 cursor-pointer text-sm`}
+                  >
+                    UK {size.uk}<br/>EU {size.eu}
+                  </p>
+                </div>
+              );
+            })
+          ) : (
+            standardSizes.map((size) => (
+              <div
+                key={size}
+                onClick={() => toggleSize(size)}
               >
-                {size}
-              </p>
-            </div>
-          ))}
+                <p
+                  className={`${
+                    sizes.includes(size)
+                      ? "bg-gray-500 text-white rounded-md"
+                      : "bg-slate-200"
+                  } px-3 py-1 cursor-pointer`}
+                >
+                  {size}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

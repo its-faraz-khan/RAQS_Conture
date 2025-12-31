@@ -11,10 +11,15 @@
 //   bestSeller: { type: Boolean },
 //   stock: { type: Number, required: true, default: 0 },
 //   date: { type: Number, required: true },
+//   discountPercent: { type: Number, default: 0, min: 0, max: 100 },
+//   discountExpiry: { type: Date, default: null },
+//   hasDiscount: { type: Boolean, default: false },
 // });
 
 // const productModel = mongoose.models.product || mongoose.model("product", productSchema);
 // export default productModel;
+
+
 
 
 
@@ -34,6 +39,7 @@ const productSchema = new mongoose.Schema({
   discountPercent: { type: Number, default: 0, min: 0, max: 100 },
   discountExpiry: { type: Date, default: null },
   hasDiscount: { type: Boolean, default: false },
+  sizeType: { type: String, enum: ['standard', 'footwear'], default: 'standard' }
 });
 
 const productModel = mongoose.models.product || mongoose.model("product", productSchema);
