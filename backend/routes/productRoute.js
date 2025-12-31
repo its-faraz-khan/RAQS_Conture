@@ -1,4 +1,37 @@
 
+// import express from "express";
+// import {
+//   addProduct,
+//   listProducts,
+//   removeProduct,
+//   getSingleProduct,
+//   updateStock,
+// } from "../controllers/productController.js";
+// import upload from "../middleware/multer.js";
+// import adminAuth from "../middleware/adminAuth.js";
+
+// const productRouter = express.Router();
+
+// productRouter.post(
+//   "/add",
+//   adminAuth,
+//   upload.fields([
+//     { name: "image1", maxCount: 1 },
+//     { name: "image2", maxCount: 1 },
+//     { name: "image3", maxCount: 1 },
+//     { name: "image4", maxCount: 1 },
+//   ]),
+//   addProduct
+// );
+// productRouter.post("/remove", adminAuth, removeProduct);
+// productRouter.post("/single", getSingleProduct);
+// productRouter.post("/update-stock", adminAuth, updateStock);
+// productRouter.get("/list", listProducts);
+
+// export default productRouter;
+
+
+
 import express from "express";
 import {
   addProduct,
@@ -6,6 +39,7 @@ import {
   removeProduct,
   getSingleProduct,
   updateStock,
+  updateDiscount,
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
@@ -26,6 +60,7 @@ productRouter.post(
 productRouter.post("/remove", adminAuth, removeProduct);
 productRouter.post("/single", getSingleProduct);
 productRouter.post("/update-stock", adminAuth, updateStock);
+productRouter.post("/update-discount", adminAuth, updateDiscount);
 productRouter.get("/list", listProducts);
 
 export default productRouter;

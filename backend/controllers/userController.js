@@ -86,7 +86,6 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
-import otpModel from "../models/otpModel.js";
 import nodemailer from "nodemailer";
 
 const createToken = (id) => {

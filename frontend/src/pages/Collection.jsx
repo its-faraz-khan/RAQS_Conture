@@ -1,4 +1,3 @@
-
 // import React, { useContext, useEffect, useState } from "react";
 // import { ShopContext } from "../context/ShopContext";
 // import { assets } from "../assets/assets";
@@ -9,14 +8,13 @@
 //   const { products, search, showSearch } = useContext(ShopContext);
 //   const [showFilter, setShowFilter] = useState(false);
 //   const [filterProducts, setFilterProducts] = useState([]);
-//   const [category, setCategory] = useState(""); // Changed to single string
+//   const [category, setCategory] = useState("");
 //   const [subCategory, setSubCategory] = useState([]);
 //   const [sortType, setSortType] = useState("relevant");
 
 //   const toggleCategory = (selectedCategory) => {
-//     // Only one category at a time
 //     if (category === selectedCategory) {
-//       setCategory(""); // Deselect if clicking the same category
+//       setCategory("");
 //     } else {
 //       setCategory(selectedCategory);
 //     }
@@ -83,7 +81,6 @@
 
 //   return (
 //     <div className="flex flex-col gap-1 pt-10 border-t sm:flex-row sm:gap-10">
-//       {/* Filter Options */}
 //       <div className="min-w-60">
 //         <p
 //           onClick={() => setShowFilter(!showFilter)}
@@ -96,7 +93,7 @@
 //             alt="Dropdown"
 //           />
 //         </p>
-//         {/* Category Filters */}
+
 //         <div
 //           className={`border border-gray-300 pl-5 py-3 mt-6 ${
 //             showFilter ? "" : "hidden"
@@ -139,7 +136,7 @@
 //             </label>
 //           </div>
 //         </div>
-//         {/* Sub Category Filters */}
+
 //         <div
 //           className={`border border-gray-300 pl-5 py-3 my-5 ${
 //             showFilter ? "" : "hidden"
@@ -177,9 +174,49 @@
 //               />
 //               Winterwear
 //             </label>
+//             <label className="flex gap-2 cursor-pointer">
+//               <input
+//                 className="w-3"
+//                 type="checkbox"
+//                 value="Summerwear"
+//                 onChange={toggleSubCategory}
+//                 checked={subCategory.includes("Summerwear")}
+//               />
+//               Summerwear
+//             </label>
+//             <label className="flex gap-2 cursor-pointer">
+//               <input
+//                 className="w-3"
+//                 type="checkbox"
+//                 value="Formal Shoes"
+//                 onChange={toggleSubCategory}
+//                 checked={subCategory.includes("Formal Shoes")}
+//               />
+//               Formal Shoes
+//             </label>
+//             <label className="flex gap-2 cursor-pointer">
+//               <input
+//                 className="w-3"
+//                 type="checkbox"
+//                 value="Loafers"
+//                 onChange={toggleSubCategory}
+//                 checked={subCategory.includes("Loafers")}
+//               />
+//               Loafers
+//             </label>
+//             <label className="flex gap-2 cursor-pointer">
+//               <input
+//                 className="w-3"
+//                 type="checkbox"
+//                 value="Slippers"
+//                 onChange={toggleSubCategory}
+//                 checked={subCategory.includes("Slippers")}
+//               />
+//               Slippers
+//             </label>
 //           </div>
 //         </div>
-//         {/* Clear Filters Button */}
+
 //         <button
 //           className={`px-4 py-2 mt-1 text-white bg-black rounded hover:bg-gray-900 ${
 //             showFilter ? "block" : "hidden"
@@ -190,11 +227,9 @@
 //         </button>
 //       </div>
 
-//       {/* View Product Items */}
 //       <div className="flex-1">
 //         <div className="flex justify-between mb-4 text-base sm:text-2xl">
 //           <Title text1={"ALL"} text2={"COLLECTIONS"} />
-//           {/* Product Sort */}
 //           <select
 //             onChange={(e) => setSortType(e.target.value)}
 //             className="px-2 text-sm border-2 border-gray-300"
@@ -204,7 +239,6 @@
 //             <option value="high-low">Sort by: High to Low</option>
 //           </select>
 //         </div>
-//         {/* Map Products */}
 //         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 gap-y-6">
 //           {filterProducts.map((item, index) => (
 //             <ProductItem
@@ -213,6 +247,9 @@
 //               name={item.name}
 //               image={item.image}
 //               price={item.price}
+//               discountPercent={item.discountPercent}
+//               discountExpiry={item.discountExpiry}
+//               hasDiscount={item.hasDiscount}
 //             />
 //           ))}
 //         </div>
@@ -227,46 +264,21 @@
 
 
 
+
+
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
-import axios from "axios";
 
 const Collection = () => {
-  const { products, search, showSearch, backendUrl } = useContext(ShopContext);
+  const { products, search, showSearch } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relevant");
-  const [ratingFilter, setRatingFilter] = useState(0); // 0 means all ratings
-  const [productRatings, setProductRatings] = useState({});
-
-  // Fetch ratings for all products
-  useEffect(() => {
-    const fetchRatings = async () => {
-      const ratings = {};
-      for (const product of products) {
-        try {
-          const response = await axios.post(backendUrl + "/api/review/get", {
-            productId: product._id,
-          });
-          if (response.data.success) {
-            ratings[product._id] = parseFloat(response.data.avgRating);
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      setProductRatings(ratings);
-    };
-
-    if (products.length > 0) {
-      fetchRatings();
-    }
-  }, [products, backendUrl]);
 
   const toggleCategory = (selectedCategory) => {
     if (category === selectedCategory) {
@@ -303,14 +315,6 @@ const Collection = () => {
       );
     }
 
-    // Rating filter
-    if (ratingFilter > 0) {
-      productsCopy = productsCopy.filter((item) => {
-        const rating = productRatings[item._id] || 0;
-        return rating >= ratingFilter;
-      });
-    }
-
     setFilterProducts(productsCopy);
   };
 
@@ -324,15 +328,6 @@ const Collection = () => {
       case "high-low":
         setFilterProducts(fpCopy.sort((a, b) => b.price - a.price));
         break;
-      case "rating":
-        setFilterProducts(
-          fpCopy.sort((a, b) => {
-            const ratingA = productRatings[a._id] || 0;
-            const ratingB = productRatings[b._id] || 0;
-            return ratingB - ratingA;
-          })
-        );
-        break;
       default:
         applyFilter();
         break;
@@ -342,12 +337,11 @@ const Collection = () => {
   const clearFilters = () => {
     setCategory("");
     setSubCategory([]);
-    setRatingFilter(0);
   };
 
   useEffect(() => {
     applyFilter();
-  }, [category, subCategory, search, showSearch, products, ratingFilter, productRatings]);
+  }, [category, subCategory, search, showSearch, products]);
 
   useEffect(() => {
     sortProduct();
@@ -355,7 +349,6 @@ const Collection = () => {
 
   return (
     <div className="flex flex-col gap-1 pt-10 border-t sm:flex-row sm:gap-10">
-      {/* Filter Options */}
       <div className="min-w-60">
         <p
           onClick={() => setShowFilter(!showFilter)}
@@ -369,7 +362,6 @@ const Collection = () => {
           />
         </p>
 
-        {/* Category Filters */}
         <div
           className={`border border-gray-300 pl-5 py-3 mt-6 ${
             showFilter ? "" : "hidden"
@@ -413,7 +405,6 @@ const Collection = () => {
           </div>
         </div>
 
-        {/* Sub Category Filters */}
         <div
           className={`border border-gray-300 pl-5 py-3 my-5 ${
             showFilter ? "" : "hidden"
@@ -465,36 +456,15 @@ const Collection = () => {
               <input
                 className="w-3"
                 type="checkbox"
-                value="Formal Shoes"
+                value="Footwear"
                 onChange={toggleSubCategory}
-                checked={subCategory.includes("Formal Shoes")}
+                checked={subCategory.includes("Footwear")}
               />
-              Formal Shoes
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="Loafers"
-                onChange={toggleSubCategory}
-                checked={subCategory.includes("Loafers")}
-              />
-              Loafers
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="Slippers"
-                onChange={toggleSubCategory}
-                checked={subCategory.includes("Slippers")}
-              />
-              Slippers
+              Footwear
             </label>
           </div>
         </div>
 
-        {/* Clear Filters Button */}
         <button
           className={`px-4 py-2 mt-1 text-white bg-black rounded hover:bg-gray-900 ${
             showFilter ? "block" : "hidden"
@@ -505,11 +475,9 @@ const Collection = () => {
         </button>
       </div>
 
-      {/* View Product Items */}
       <div className="flex-1">
         <div className="flex justify-between mb-4 text-base sm:text-2xl">
           <Title text1={"ALL"} text2={"COLLECTIONS"} />
-          {/* Product Sort */}
           <select
             onChange={(e) => setSortType(e.target.value)}
             className="px-2 text-sm border-2 border-gray-300"
@@ -517,10 +485,8 @@ const Collection = () => {
             <option value="relevant">Sort by: Relevant</option>
             <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: High to Low</option>
-            <option value="rating">Sort by: Rating</option>
           </select>
         </div>
-        {/* Map Products */}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 gap-y-6">
           {filterProducts.map((item, index) => (
             <ProductItem
@@ -529,7 +495,9 @@ const Collection = () => {
               name={item.name}
               image={item.image}
               price={item.price}
-              rating={productRatings[item._id] || 0}
+              discountPercent={item.discountPercent}
+              discountExpiry={item.discountExpiry}
+              hasDiscount={item.hasDiscount}
             />
           ))}
         </div>

@@ -4,13 +4,43 @@
 // import ProductItem from "./ProductItem";
 
 // const BestSeller = () => {
-//   const { products } = useContext(ShopContext);
+//   const { products, loading } = useContext(ShopContext);
 //   const [bestSeller, setBestSeller] = useState([]);
 
 //   useEffect(() => {
-//     const bestProduct = products.filter((item) => item.bestseller);
-//     setBestSeller(bestProduct.slice(0, 5));
-//   }, []);
+//     if (products && products.length > 0) {
+//       const bestProduct = products.filter((item) => item.bestSeller);
+//       setBestSeller(bestProduct.slice(0, 5));
+//     }
+//   }, [products]); // Re-run when products change
+
+//   // Show loading state
+//   if (loading) {
+//     return (
+//       <div className="my-10">
+//         <div className="py-8 text-3xl text-center">
+//           <Title text1={"BEST"} text2={"SELLERS"} />
+//         </div>
+//         <div className="text-center py-10">
+//           <p className="text-gray-500">Loading products...</p>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   // Show message if no best sellers
+//   if (!loading && bestSeller.length === 0) {
+//     return (
+//       <div className="my-10">
+//         <div className="py-8 text-3xl text-center">
+//           <Title text1={"BEST"} text2={"SELLERS"} />
+//         </div>
+//         <div className="text-center py-10">
+//           <p className="text-gray-500">No best sellers yet. Mark products as best sellers in admin panel.</p>
+//         </div>
+//       </div>
+//     );
+//   }
 
 //   return (
 //     <div className="my-10">
@@ -56,9 +86,8 @@ const BestSeller = () => {
       const bestProduct = products.filter((item) => item.bestSeller);
       setBestSeller(bestProduct.slice(0, 5));
     }
-  }, [products]); // Re-run when products change
+  }, [products]);
 
-  // Show loading state
   if (loading) {
     return (
       <div className="my-10">
@@ -72,7 +101,6 @@ const BestSeller = () => {
     );
   }
 
-  // Show message if no best sellers
   if (!loading && bestSeller.length === 0) {
     return (
       <div className="my-10">
@@ -103,6 +131,9 @@ const BestSeller = () => {
             image={item.image}
             name={item.name}
             price={item.price}
+            discountPercent={item.discountPercent}
+            discountExpiry={item.discountExpiry}
+            hasDiscount={item.hasDiscount}
           />
         ))}
       </div>

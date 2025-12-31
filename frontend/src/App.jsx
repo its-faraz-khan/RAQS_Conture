@@ -84,7 +84,6 @@ import Contact from './pages/Contact'
 import Product from './pages/Product'
 import Cart from './pages/Cart'
 import Login from './pages/Login'
-import ForgotPassword from './pages/ForgotPassword'
 import PlaceOrder from './pages/PlaceOrder'
 import Orders from './pages/Orders'
 import NavBar from './components/NavBar'
@@ -109,7 +108,6 @@ const App = () => {
         <Route path='/contact' element={<Contact />} />
         <Route path='/product/:productId' element={<Product />} />
         <Route path='/login' element={<Login />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
 
         {/* Protected Routes */}
         <Route 

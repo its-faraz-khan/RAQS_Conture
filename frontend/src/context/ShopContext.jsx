@@ -11,10 +11,11 @@
 //   const [showSearch, setShowSearch] = useState(false);
 //   const [cartItems, setCartItems] = useState({});
 //   const [products, setProducts] = useState([]);
-//   const [token, setToken] = useState(""); // Session only - no localStorage
+//   const [token, setToken] = useState("");
+//   const [loading, setLoading] = useState(true);
 //   const navigate = useNavigate();
 
-//   const currency = "Rs"; // PKR
+//   const currency = "Rs";
 //   const delivery_fee = 250;
 
 //   const addToCart = async (itemId, size) => {
@@ -70,12 +71,29 @@
 //     let totalAmount = 0;
 //     for (const items in cartItems) {
 //       let itemInfo = products.find((product) => product._id === items);
-//       for (const item in cartItems[items]) {
-//         try {
-//           if (cartItems[items][item] > 0) {
-//             totalAmount += itemInfo.price * cartItems[items][item];
-//           }
-//         } catch (error) {}
+//       if (itemInfo) {
+//         for (const item in cartItems[items]) {
+//           try {
+//             if (cartItems[items][item] > 0) {
+//               // Calculate discounted price
+//               let finalPrice = itemInfo.price;
+              
+//               // Check if discount is valid
+//               const isDiscountValid = 
+//                 itemInfo.hasDiscount && 
+//                 itemInfo.discountExpiry && 
+//                 new Date(itemInfo.discountExpiry) > new Date();
+              
+//               if (isDiscountValid) {
+//                 finalPrice = Math.round(
+//                   itemInfo.price - (itemInfo.price * itemInfo.discountPercent) / 100
+//                 );
+//               }
+              
+//               totalAmount += finalPrice * cartItems[items][item];
+//             }
+//           } catch (error) {}
+//         }
 //       }
 //     }
 //     return totalAmount;
@@ -83,23 +101,34 @@
 
 //   const getProductsData = async () => {
 //     try {
-//       const response = await axios.get(backendUrl + "/api/product/list");
+//       setLoading(true);
+//       const response = await axios.get(backendUrl + "/api/product/list", {
+//         timeout: 5000,
+//       });
+
 //       if (response.data.success) {
 //         setProducts(response.data.products);
+//         console.log("Products loaded:", response.data.products.length);
 //       } else {
-//         toast.error(response.data.message);
+//         console.error("Error response:", response.data.message);
 //       }
 //     } catch (error) {
-//       console.log(error);
-//       toast.error(error.message);
+//       console.error("Error fetching products:", error);
+      
+//       if (error.code === 'ECONNABORTED') {
+//         console.log("Request timeout - backend might be slow");
+//       } else if (error.code === 'ERR_NETWORK') {
+//         console.log("Network error - backend not running?");
+//       }
+//     } finally {
+//       setLoading(false);
 //     }
 //   };
 
 //   useEffect(() => {
+//     console.log("ShopContext mounted, fetching products...");
 //     getProductsData();
 //   }, []);
-
-//   // NO localStorage - token only in session memory
 
 //   const value = {
 //     products,
@@ -119,6 +148,7 @@
 //     backendUrl,
 //     setToken,
 //     token,
+//     loading,
 //   };
 
 //   return (
@@ -127,6 +157,11 @@
 // };
 
 // export default ShopContextProvider;
+
+
+
+
+
 
 
 
@@ -145,7 +180,7 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -178,6 +213,21 @@ const ShopContextProvider = (props) => {
     }
 
     setCartItems(cartData);
+
+    // Sync with backend if user is logged in
+    if (token) {
+      try {
+        await axios.post(
+          backendUrl + "/api/cart/add",
+          { itemId, size },
+          { headers: { token } }
+        );
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to sync cart");
+      }
+    }
+
     toast.success("Item Added To The Cart");
   };
 
@@ -198,7 +248,29 @@ const ShopContextProvider = (props) => {
   const updateQuantity = async (itemId, size, quantity) => {
     let cartData = structuredClone(cartItems);
     cartData[itemId][size] = quantity;
+
+    if (quantity === 0) {
+      delete cartData[itemId][size];
+      if (Object.keys(cartData[itemId]).length === 0) {
+        delete cartData[itemId];
+      }
+    }
+
     setCartItems(cartData);
+
+    // Sync with backend if user is logged in
+    if (token) {
+      try {
+        await axios.post(
+          backendUrl + "/api/cart/update",
+          { itemId, size, quantity },
+          { headers: { token } }
+        );
+      } catch (error) {
+        console.error(error);
+        toast.error("Failed to update cart");
+      }
+    }
   };
 
   const getCartAmount = () => {
@@ -209,7 +281,20 @@ const ShopContextProvider = (props) => {
         for (const item in cartItems[items]) {
           try {
             if (cartItems[items][item] > 0) {
-              totalAmount += itemInfo.price * cartItems[items][item];
+              let finalPrice = itemInfo.price;
+              
+              const isDiscountValid = 
+                itemInfo.hasDiscount && 
+                itemInfo.discountExpiry && 
+                new Date(itemInfo.discountExpiry) > new Date();
+              
+              if (isDiscountValid) {
+                finalPrice = Math.round(
+                  itemInfo.price - (itemInfo.price * itemInfo.discountPercent) / 100
+                );
+              }
+              
+              totalAmount += finalPrice * cartItems[items][item];
             }
           } catch (error) {}
         }
@@ -222,7 +307,7 @@ const ShopContextProvider = (props) => {
     try {
       setLoading(true);
       const response = await axios.get(backendUrl + "/api/product/list", {
-        timeout: 5000, // 5 second timeout
+        timeout: 5000,
       });
 
       if (response.data.success) {
@@ -234,7 +319,6 @@ const ShopContextProvider = (props) => {
     } catch (error) {
       console.error("Error fetching products:", error);
       
-      // Don't show toast error on initial load
       if (error.code === 'ECONNABORTED') {
         console.log("Request timeout - backend might be slow");
       } else if (error.code === 'ERR_NETWORK') {
@@ -245,10 +329,34 @@ const ShopContextProvider = (props) => {
     }
   };
 
+  const getUserCart = async (token) => {
+    try {
+      const response = await axios.post(
+        backendUrl + "/api/cart/get",
+        {},
+        { headers: { token } }
+      );
+
+      if (response.data.success) {
+        setCartItems(response.data.cartData);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    console.log("ShopContext mounted, fetching products...");
     getProductsData();
   }, []);
+
+  useEffect(() => {
+    if (!token && localStorage.getItem("token")) {
+      setToken(localStorage.getItem("token"));
+    }
+    if (token) {
+      getUserCart(token);
+    }
+  }, [token]);
 
   const value = {
     products,

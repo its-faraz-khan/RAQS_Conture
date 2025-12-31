@@ -1,177 +1,267 @@
-
-// import React, { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import Title from '../components/Title';
-// import CartTotal from '../components/CartTotal';
-// import { assets } from '../assets/assets';
+// import React, { useContext, useState } from "react";
+// import Title from "../components/Title";
+// import CartTotal from "../components/CartTotal";
+// import { ShopContext } from "../context/ShopContext";
+// import axios from "axios";
+// import { toast } from "react-toastify";
 
 // const PlaceOrder = () => {
-//   const [method, setMethod] = useState('cod');
+//   const [method, setMethod] = useState("cod");
+//   const {
+//     navigate,
+//     backendUrl,
+//     token,
+//     cartItems,
+//     setCartItems,
+//     getCartAmount,
+//     delivery_fee,
+//     products,
+//   } = useContext(ShopContext);
+
 //   const [formData, setFormData] = useState({
-//     firstName: '',
-//     lastName: '',
-//     email: '',
-//     street: '',
-//     city: '',
-//     state: '',
-//     zip: '',
-//     country: '',
-//     mobile: ''
+//     firstName: "",
+//     lastName: "",
+//     email: "",
+//     street: "",
+//     city: "",
+//     state: "",
+//     zipcode: "",
+//     country: "",
+//     phone: "",
 //   });
 
-//   const [error, setError] = useState('');
-//   const navigate = useNavigate();
+//   const onChangeHandler = (event) => {
+//     const name = event.target.name;
+//     let value = event.target.value;
 
-//   // Handle input changes
-//   const handleChange = (e) => {
-//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//     // Phone validation for Pakistani numbers
+//     if (name === "phone") {
+//       // Remove any non-digit characters
+//       value = value.replace(/\D/g, "");
+      
+//       // Ensure it starts with +92
+//       if (value.length > 0 && !value.startsWith("92")) {
+//         value = "92" + value;
+//       }
+      
+//       // Limit to 12 digits (92 + 10 digits)
+//       if (value.length > 12) {
+//         value = value.slice(0, 12);
+//       }
+      
+//       value = "+" + value;
+//     }
+
+//     setFormData((data) => ({ ...data, [name]: value }));
 //   };
 
-//   // Handle Place Order click
-//   const handlePlaceOrder = () => {
-//     const token = localStorage.getItem('token');
+//   const validatePhone = (phone) => {
+//     // Remove + sign for validation
+//     const digits = phone.replace(/\+/g, "");
+    
+//     // Check if it starts with 92 and has 12 digits total
+//     if (!digits.startsWith("92") || digits.length !== 12) {
+//       return false;
+//     }
+    
+//     return true;
+//   };
 
-//     if (!token) {
-//       navigate('/login');
+//   const onSubmitHandler = async (event) => {
+//     event.preventDefault();
+
+//     // Validate phone number
+//     if (!validatePhone(formData.phone)) {
+//       toast.error("Please enter a valid Pakistani phone number (e.g., +923001234567)");
 //       return;
 //     }
 
-//     // Check all required fields
-//     for (let key in formData) {
-//       if (!formData[key]) {
-//         setError('Please fill all the fields before placing order.');
-//         return;
-//       }
-//     }
+//     try {
+//       let orderItems = [];
 
-//     setError('');
-//     // You can send order to backend here or just navigate for now
-//     navigate('/orders');
+//       for (const items in cartItems) {
+//         for (const item in cartItems[items]) {
+//           if (cartItems[items][item] > 0) {
+//             const itemInfo = structuredClone(
+//               products.find((product) => product._id === items)
+//             );
+//             if (itemInfo) {
+//               itemInfo.size = item;
+//               itemInfo.quantity = cartItems[items][item];
+//               orderItems.push(itemInfo);
+//             }
+//           }
+//         }
+//       }
+
+//       let orderData = {
+//         address: formData,
+//         items: orderItems,
+//         amount: getCartAmount() + delivery_fee,
+//       };
+
+//       const response = await axios.post(
+//         backendUrl + "/api/order/place",
+//         orderData,
+//         { headers: { token } }
+//       );
+
+//       if (response.data.success) {
+//         setCartItems({});
+//         navigate("/orders");
+//         toast.success("Order placed successfully!");
+//       } else {
+//         toast.error(response.data.message);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//       toast.error(error.message);
+//     }
 //   };
 
 //   return (
-//     <div className='flex flex-col justify-between gap-4 pt-5 sm:flex-row sm:pt-14 min-h-[80vh] border-t'>
-//       {/* Left Side Content */}
-//       <div className='flex flex-col w-full gap-4 sm:max-w-[480px]'>
-//         <div className='my-3 text-xl sm:text-2xl'>
-//           <Title text1={'DELIVERY'} text2={'INFORMATION'} />
+//     <form
+//       onSubmit={onSubmitHandler}
+//       className="flex flex-col justify-between gap-4 pt-5 sm:flex-row sm:pt-14 min-h-[80vh] border-t"
+//     >
+//       <div className="flex flex-col w-full gap-4 sm:max-w-[480px]">
+//         <div className="my-3 text-xl sm:text-2xl">
+//           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
 //         </div>
-//         <div className='flex gap-3'>
-//           <input 
-//             name='firstName'
+        
+//         <div className="flex gap-3">
+//           <input
+//             required
+//             onChange={onChangeHandler}
+//             name="firstName"
 //             value={formData.firstName}
-//             onChange={handleChange}
-//             className='w-full px-4 py-2 border border-gray-300 rounded' 
-//             type="text" 
-//             placeholder='First Name' 
+//             className="w-full px-4 py-2 border border-gray-300 rounded"
+//             type="text"
+//             placeholder="First Name *"
 //           />
-//           <input 
-//             name='lastName'
+//           <input
+//             onChange={onChangeHandler}
+//             name="lastName"
 //             value={formData.lastName}
-//             onChange={handleChange}
-//             className='w-full px-4 py-2 border border-gray-300 rounded' 
-//             type="text" 
-//             placeholder='Last Name' 
+//             className="w-full px-4 py-2 border border-gray-300 rounded"
+//             type="text"
+//             placeholder="Last Name"
 //           />
 //         </div>
-//         <input 
-//           name='email'
+        
+//         <input
+//           onChange={onChangeHandler}
+//           name="email"
 //           value={formData.email}
-//           onChange={handleChange}
-//           className='w-full px-4 py-2 border border-gray-300 rounded' 
-//           type="email" 
-//           placeholder='Email Address' 
+//           className="w-full px-4 py-2 border border-gray-300 rounded"
+//           type="email"
+//           placeholder="Email Address"
 //         />
-//         <input 
-//           name='street'
+        
+//         <input
+//           required
+//           onChange={onChangeHandler}
+//           name="street"
 //           value={formData.street}
-//           onChange={handleChange}
-//           className='w-full px-4 py-2 border border-gray-300 rounded' 
-//           type="text" 
-//           placeholder='Street' 
+//           className="w-full px-4 py-2 border border-gray-300 rounded"
+//           type="text"
+//           placeholder="Street / Address *"
 //         />
-//         <div className='flex gap-3'>
-//           <input 
-//             name='city'
+        
+//         <div className="flex gap-3">
+//           <input
+//             onChange={onChangeHandler}
+//             name="city"
 //             value={formData.city}
-//             onChange={handleChange}
-//             className='w-full px-4 py-2 border border-gray-300 rounded' 
-//             type="text" 
-//             placeholder='City' 
+//             className="w-full px-4 py-2 border border-gray-300 rounded"
+//             type="text"
+//             placeholder="City"
 //           />
-//           <input 
-//             name='state'
+//           <input
+//             onChange={onChangeHandler}
+//             name="state"
 //             value={formData.state}
-//             onChange={handleChange}
-//             className='w-full px-4 py-2 border border-gray-300 rounded' 
-//             type="text" 
-//             placeholder='State' 
+//             className="w-full px-4 py-2 border border-gray-300 rounded"
+//             type="text"
+//             placeholder="State"
 //           />
 //         </div>
-//         <div className='flex gap-3'>
-//           <input 
-//             name='zip'
-//             value={formData.zip}
-//             onChange={handleChange}
-//             className='w-full px-4 py-2 border border-gray-300 rounded' 
-//             type="number" 
-//             placeholder='Zip Code' 
+        
+//         <div className="flex gap-3">
+//           <input
+//             onChange={onChangeHandler}
+//             name="zipcode"
+//             value={formData.zipcode}
+//             className="w-full px-4 py-2 border border-gray-300 rounded"
+//             type="text"
+//             placeholder="Zip Code"
 //           />
-//           <input 
-//             name='country'
+//           <input
+//             onChange={onChangeHandler}
+//             name="country"
 //             value={formData.country}
-//             onChange={handleChange}
-//             className='w-full px-4 py-2 border border-gray-300 rounded' 
-//             type="text" 
-//             placeholder='Country' 
+//             className="w-full px-4 py-2 border border-gray-300 rounded"
+//             type="text"
+//             placeholder="Country"
 //           />
 //         </div>
-//         <input 
-//           name='mobile'
-//           value={formData.mobile}
-//           onChange={handleChange}
-//           className='w-full px-4 py-2 border border-gray-300 rounded' 
-//           type="number" 
-//           placeholder='Mobile' 
-//         />
+        
+//         <div>
+//           <input
+//             required
+//             onChange={onChangeHandler}
+//             name="phone"
+//             value={formData.phone}
+//             className="w-full px-4 py-2 border border-gray-300 rounded"
+//             type="text"
+//             placeholder="Phone: +923001234567 *"
+//           />
+//           <p className="text-xs text-gray-500 mt-1">
+//             * Pakistani number required (starts with +92)
+//           </p>
+//         </div>
 
-//         {error && (
-//           <p className="text-red-600 mt-2 text-sm">{error}</p>
-//         )}
+//         <p className="text-xs text-gray-500">* Required fields</p>
 //       </div>
 
-//       {/* Right Side Content */}
-//       <div className='mt-8'>
-//         <div className='mt-8 min-w-80'>
+//       <div className="mt-8">
+//         <div className="mt-8 min-w-80">
 //           <CartTotal />
 //         </div>
 
-//         {/* Payment Methods Selection */}
-//         <div className='mt-12'>
-//           <Title text1={'PAYMENT'} text2={'METHODS'} />
-//           <div className='flex flex-col gap-3 lg:flex-row'>
-//             <div onClick={() => setMethod('cod')} className='flex items-center gap-3 p-2 px-3 border cursor-pointer'>
-//               <p className={`min-w-3.5 h-3.5 border rounded-full ${method === 'cod' ? 'bg-green-600' : ''}`}></p>
-//               <p className='mx-4 text-sm font-medium text-gray-500'>CASH ON DELIVERY</p>
+//         <div className="mt-12">
+//           <Title text1={"PAYMENT"} text2={"METHOD"} />
+//           <div className="flex flex-col gap-3 lg:flex-row">
+//             <div
+//               onClick={() => setMethod("cod")}
+//               className="flex items-center gap-3 p-2 px-3 border cursor-pointer"
+//             >
+//               <p
+//                 className={`min-w-3.5 h-3.5 border rounded-full ${
+//                   method === "cod" ? "bg-green-600" : ""
+//                 }`}
+//               ></p>
+//               <p className="mx-4 text-sm font-medium text-gray-500">
+//                 CASH ON DELIVERY
+//               </p>
 //             </div>
 //           </div>
 
-//           <div className='w-full mt-8 text-end'>
+//           <div className="w-full mt-8 text-end">
 //             <button
-//               onClick={handlePlaceOrder}
-//               className='px-16 py-3 text-sm text-white bg-black active:bg-gray-800'
+//               type="submit"
+//               className="px-16 py-3 text-sm text-white bg-black active:bg-gray-800"
 //             >
 //               PLACE ORDER
 //             </button>
 //           </div>
 //         </div>
 //       </div>
-//     </div>
+//     </form>
 //   );
 // };
 
 // export default PlaceOrder;
-
 
 
 
@@ -211,12 +301,42 @@ const PlaceOrder = () => {
 
   const onChangeHandler = (event) => {
     const name = event.target.name;
-    const value = event.target.value;
+    let value = event.target.value;
+
+    if (name === "phone") {
+      value = value.replace(/\D/g, "");
+      
+      if (value.length > 0 && !value.startsWith("92")) {
+        value = "92" + value;
+      }
+      
+      if (value.length > 12) {
+        value = value.slice(0, 12);
+      }
+      
+      value = "+" + value;
+    }
+
     setFormData((data) => ({ ...data, [name]: value }));
+  };
+
+  const validatePhone = (phone) => {
+    const digits = phone.replace(/\+/g, "");
+    
+    if (!digits.startsWith("92") || digits.length !== 12) {
+      return false;
+    }
+    
+    return true;
   };
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+
+    if (!validatePhone(formData.phone)) {
+      toast.error("Please enter a valid Pakistani phone number (e.g., +923001234567)");
+      return;
+    }
 
     try {
       let orderItems = [];
@@ -261,16 +381,40 @@ const PlaceOrder = () => {
     }
   };
 
+  // Calculate total savings
+  const calculateSavings = () => {
+    let totalSavings = 0;
+    for (const items in cartItems) {
+      const product = products.find((p) => p._id === items);
+      if (product) {
+        const isDiscountValid =
+          product.hasDiscount &&
+          product.discountExpiry &&
+          new Date(product.discountExpiry) > new Date();
+
+        if (isDiscountValid) {
+          const discount = product.price * (product.discountPercent / 100);
+          for (const size in cartItems[items]) {
+            totalSavings += discount * cartItems[items][size];
+          }
+        }
+      }
+    }
+    return Math.round(totalSavings);
+  };
+
+  const savings = calculateSavings();
+
   return (
     <form
       onSubmit={onSubmitHandler}
       className="flex flex-col justify-between gap-4 pt-5 sm:flex-row sm:pt-14 min-h-[80vh] border-t"
     >
-      {/* Left Side Content */}
       <div className="flex flex-col w-full gap-4 sm:max-w-[480px]">
         <div className="my-3 text-xl sm:text-2xl">
           <Title text1={"DELIVERY"} text2={"INFORMATION"} />
         </div>
+        
         <div className="flex gap-3">
           <input
             required
@@ -279,27 +423,29 @@ const PlaceOrder = () => {
             value={formData.firstName}
             className="w-full px-4 py-2 border border-gray-300 rounded"
             type="text"
-            placeholder="First Name"
+            placeholder="First Name *"
           />
           <input
-            required
+          required
             onChange={onChangeHandler}
             name="lastName"
             value={formData.lastName}
             className="w-full px-4 py-2 border border-gray-300 rounded"
             type="text"
-            placeholder="Last Name"
+            placeholder="Last Name *"
           />
         </div>
+        
         <input
-          required
+        required
           onChange={onChangeHandler}
           name="email"
           value={formData.email}
           className="w-full px-4 py-2 border border-gray-300 rounded"
           type="email"
-          placeholder="Email Address"
+          placeholder="Email Address *"
         />
+        
         <input
           required
           onChange={onChangeHandler}
@@ -307,66 +453,71 @@ const PlaceOrder = () => {
           value={formData.street}
           className="w-full px-4 py-2 border border-gray-300 rounded"
           type="text"
-          placeholder="Street"
+          placeholder="Street / Address *"
         />
+        
         <div className="flex gap-3">
           <input
-            required
+          required
             onChange={onChangeHandler}
             name="city"
             value={formData.city}
             className="w-full px-4 py-2 border border-gray-300 rounded"
             type="text"
-            placeholder="City"
+            placeholder="City *"
           />
           <input
-            required
+          required
             onChange={onChangeHandler}
             name="state"
             value={formData.state}
             className="w-full px-4 py-2 border border-gray-300 rounded"
             type="text"
-            placeholder="State"
+            placeholder="State *"
           />
         </div>
+        
         <div className="flex gap-3">
           <input
-            required
             onChange={onChangeHandler}
             name="zipcode"
             value={formData.zipcode}
             className="w-full px-4 py-2 border border-gray-300 rounded"
-            type="number"
+            type="text"
             placeholder="Zip Code"
           />
+        </div>
+        
+        <div>
           <input
             required
             onChange={onChangeHandler}
-            name="country"
-            value={formData.country}
+            name="phone"
+            value={formData.phone}
             className="w-full px-4 py-2 border border-gray-300 rounded"
             type="text"
-            placeholder="Country"
+            placeholder="Phone: +923001234567 *"
           />
+          <p className="text-xs text-gray-500 mt-1">
+            * Pakistani number required (starts with +92)
+          </p>
         </div>
-        <input
-          required
-          onChange={onChangeHandler}
-          name="phone"
-          value={formData.phone}
-          className="w-full px-4 py-2 border border-gray-300 rounded"
-          type="number"
-          placeholder="Phone"
-        />
+
+        <p className="text-xs text-gray-500">* Required fields</p>
       </div>
 
-      {/* Right Side Content */}
       <div className="mt-8">
         <div className="mt-8 min-w-80">
+          {savings > 0 && (
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-green-700 font-semibold text-center">
+                🎉 You're saving Rs {savings.toLocaleString()} with discounts!
+              </p>
+            </div>
+          )}
           <CartTotal />
         </div>
 
-        {/* Payment Methods Selection */}
         <div className="mt-12">
           <Title text1={"PAYMENT"} text2={"METHOD"} />
           <div className="flex flex-col gap-3 lg:flex-row">
