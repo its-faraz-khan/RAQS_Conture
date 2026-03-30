@@ -1,6 +1,5 @@
 import React from 'react'
 import Title from '../components/Title'
-import { assets } from '../assets/assets'
 import NewsLetterBox from '../components/NewsLetterBox'
 
 const About = () => {
@@ -24,12 +23,12 @@ const About = () => {
   </div>
   {
         <div className='flex flex-col justify-center gap-6 text-gray-600 md:w-2/4'>
-          <p>Welcome to ClassyShop, where style meets quality. Our mission is to bring you the latest fashion trends and must-have items, all curated with an eye for quality and design. We believe that everyone deserves to express themselves through fashion, and we're here to make that easier and more enjoyable. Our collections are carefully selected to offer you a range of options that cater to every taste and occasion.</p>
-          <p>At ClassyShop, we prioritize your satisfaction. From the moment you browse our site to the day your order arrives, we are dedicated to providing a seamless shopping experience. Our team is always on the lookout for the latest trends, ensuring that you have access to the freshest styles as soon as they hit the runway. Thank you for choosing Trendify. We’re excited to be a part of your style journey.</p>
+          <p>Welcome to RAQS, where style meets quality. Our mission is to bring you refined fashion, standout essentials, and everyday confidence through carefully curated pieces that feel modern and timeless.</p>
+          <p>At RAQS, your satisfaction shapes everything we do. From effortless browsing to reliable delivery, we are committed to making each part of your shopping experience smooth, inspiring, and memorable.</p>
           <b className='text-gray-800'>Our Mission</b>
-          <p>At ClassyShop, our mission is to empower you to express your unique style with high-quality, on-trend fashion. We strive to make fashion accessible to all, offering diverse products that inspire confidence.</p>
+          <p>At RAQS, our mission is to empower you to express your unique style with high-quality, trend-conscious fashion that feels accessible, polished, and confidently wearable.</p>
           <b className='text-gray-800'>Our Vision</b>
-          <p>At ClassyShop, our vision is to be a global fashion leader, known for cutting-edge style and quality. We aim to inspire confidence and creativity, making ClassyShop the go-to choice for individual expression.</p>
+          <p>At RAQS, our vision is to become a trusted fashion destination known for elevated design, dependable quality, and a brand experience that inspires confidence in every wardrobe.</p>
         </div>
 }
       </div>
@@ -39,15 +38,15 @@ const About = () => {
       <div className='flex flex-col mb-20 text-sm md:flex-row'>
         <div className='flex flex-col gap-5 px-10 py-8 border md:px-16 sm:py-20'>
           <b>Quality Assurance</b>
-          <p className='text-gray-600'>At ClassyShop, quality comes first. Every product is carefully chosen and inspected to meet our high standards. Shop with confidence, knowing we ensure excellence in every detail.</p>
+          <p className='text-gray-600'>At RAQS, quality comes first. Every product is carefully chosen and reviewed to meet our standards, so you can shop with confidence and clarity.</p>
         </div>
         <div className='flex flex-col gap-5 px-10 py-8 border md:px-16 sm:py-20'>
           <b>Convenience</b>
-          <p className='text-gray-600'>ClassyShop ensures a smooth shopping experience with easy browsing, fast shipping, simple returns, and multiple payment options. Your comfort and satisfaction are our priorities.</p>
+          <p className='text-gray-600'>RAQS delivers a smooth shopping experience with easy browsing, fast shipping, simple returns, and flexible payment options designed around your convenience.</p>
         </div>
         <div className='flex flex-col gap-5 px-10 py-8 border md:px-16 sm:py-20'>
           <b>Exceptional Customer Service</b>
-          <p className='text-gray-600'>At ClassyShop, exceptional service is our promise. Our dedicated support team is here to assist you with any questions or concerns, ensuring a smooth and satisfying shopping experience.</p>
+          <p className='text-gray-600'>At RAQS, exceptional service is part of the promise. Our support team is here to help with questions, orders, and updates whenever you need us.</p>
         </div>
       </div>
       <NewsLetterBox />

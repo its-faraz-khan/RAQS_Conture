@@ -132,6 +132,20 @@ const Cart = () => {
     return product.price;
   };
 
+  // Show a loading state while products haven't been fetched yet
+  if (products.length === 0 && cartData.length > 0) {
+    return (
+      <div className='border-t pt-14'>
+        <div className='mb-3 text-2xl'>
+          <Title text1={'YOUR'} text2={'CART'} />
+        </div>
+        <div className='flex justify-center items-center py-20 text-gray-500 text-sm'>
+          Loading cart…
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='border-t pt-14'>
       <div className='mb-3 text-2xl'>
@@ -140,6 +154,10 @@ const Cart = () => {
       <div>
         {cartData.map((item, index) => {
           const productData = products.find((product) => product._id === item._id);
+
+          // Guard: skip items whose product hasn't loaded yet
+          if (!productData) return null;
+
           const finalPrice = getDiscountedPrice(productData);
           const isDiscountValid =
             productData.hasDiscount &&

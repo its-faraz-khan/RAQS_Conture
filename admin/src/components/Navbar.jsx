@@ -5,9 +5,13 @@ import { Link } from "react-router-dom";
 const Navbar = ({ setToken }) => {
   return (
     <div className="top-0 left-0 z-50 w-full transition-all duration-300 bg-gray-600 bg-opacity-50 shadow-lg backdrop-blur-md">
-      <div className="flex items-center py-2 px-[4%] justify-between">
-        <Link to={"/"}>
-          <img className="w-44" src={assets.logo} alt="Trendify" />
+      <div className="flex items-center justify-between py-3 px-[4%]">
+        <Link to={"/"} className="flex items-center">
+          <img
+            className="w-[170px] object-contain sm:w-[210px]"
+            src={assets.logo}
+            alt="RAQS Clothing Store"
+          />
         </Link>
         <button
           onClick={() => setToken("")}

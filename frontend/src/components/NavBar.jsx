@@ -24,7 +24,7 @@
 //         <div className='flex items-center justify-between py-5 font-medium'>
             
 //             <Link to='/'>
-//                 <img src={assets.logo} className='w-36' alt="ClassyShop" />
+//                 <img src={assets.logo} className='w-36' alt="RAQS Clothing Store" />
 //             </Link>
 
 //             <ul className='hidden gap-5 text-sm text-gray-700 sm:flex'>
@@ -157,10 +157,14 @@ const NavBar = () => {
     const showSearchIcon = location.pathname.includes('collection');
 
     return (
-        <div className='flex items-center justify-between py-5 font-medium'>
+        <div className='flex items-center justify-between py-4 font-medium md:py-5'>
             
-            <Link to='/'>
-                <img src={assets.logo} className='w-36' alt="ClassyShop" />
+            <Link to='/' className='mr-4 flex items-center py-1'>
+                <img
+                    src={assets.logo}
+                    className='block w-[160px] object-contain sm:w-[190px] lg:w-[220px]'
+                    alt="RAQS Clothing Store"
+                />
             </Link>
 
             <ul className='hidden gap-5 text-sm text-gray-700 sm:flex'>

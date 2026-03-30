@@ -7,10 +7,14 @@ const Footer = () => {
     <div>
         <div className='flex flex-col sm:grid grid-cols-[3fr_1fr_1fr] gap-14 my-10 mt-40 text-sm'>
             <div>
-                <Link to='/'>
-                    <img src={assets.logo} className='w-32 mb-5 cursor-pointer' alt="ClassyShop" />
+                <Link to='/' className='inline-flex items-center py-1'>
+                    <img
+                        src={assets.logo}
+                        className='mb-6 block w-[180px] cursor-pointer object-contain sm:w-[210px]'
+                        alt="RAQS Clothing Store"
+                    />
                 </Link>
-                <p className='w-full text-gray-600 md:w-2/3'>Thank you for shopping with ClassyShop! We're dedicated to bringing you the latest trends and top-quality products. Follow us on social media for updates on new arrivals, exclusive offers, and more. If you have any questions or need assistance, our friendly customer support team is here to help. Subscribe to our newsletter for special discounts and be the first to know about our latest promotions. Your style journey starts here—let's make it unforgettable!</p>
+                <p className='w-full text-gray-600 md:w-2/3'>Thank you for shopping with RAQS. We are dedicated to bringing you elevated fashion, dependable quality, and a smooth shopping experience from first click to final delivery. Follow us for new arrivals, exclusive offers, and carefully curated collections designed to keep your style feeling fresh.</p>
             </div>
 
             <div>
@@ -41,7 +45,7 @@ const Footer = () => {
         </div>
         <div>
             <hr />
-            <p className='py-5 text-sm text-center'>Copyright 2024 ClassyShop. All rights reserved.</p>
+            <p className='py-5 text-sm text-center'>Copyright {new Date().getFullYear()} RAQS. All rights reserved.</p>
         </div>
     </div>
   )

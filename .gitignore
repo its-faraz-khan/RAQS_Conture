@@ -12,3 +12,6 @@ build
 
 # vite cache
 .vite
+
+.future-enhancements.md
+*/.future-enhancements.md

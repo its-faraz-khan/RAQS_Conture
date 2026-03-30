@@ -39,7 +39,9 @@
 
 import express from "express";
 import cors from "cors";
-import "dotenv/config";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
 import userRouter from "./routes/userRoute.js";
@@ -48,6 +50,11 @@ import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import wishlistRouter from "./routes/wishlistRoute.js";
 import subscriptionRouter from "./routes/subscriptionRoute.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, ".env") });
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -68,4 +75,12 @@ app.get("/", (req, res) => {
   res.send("API Working");
 });
 
-app.listen(port, () => console.log("Server started on PORT : " + port));
+app.listen(port, () => {
+  console.log("Server started on PORT : " + port);
+
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    console.warn(
+      "Google sign-in is not configured. Add GOOGLE_CLIENT_ID to backend/.env and restart the backend server."
+    );
+  }
+});

@@ -24,7 +24,7 @@ const subscribe = async (req, res) => {
     const mailOptions = {
       from: email,
       to: process.env.ADMIN_EMAIL,
-      subject: "New Newsletter Subscription - ClassyShop",
+      subject: "New Newsletter Subscription - RAQS",
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333;">New Newsletter Subscription</h2>

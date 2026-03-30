@@ -30,7 +30,7 @@
 //     <div className="flex items-center justify-center w-full min-h-screen">
 //       <div className="max-w-md px-8 py-6 bg-white rounded-lg shadow-md">
 //         <div className="mb-3 w-fit">
-//           <img src={assets.logo} alt="ClassyShop" />
+//           <img src={assets.logo} alt="RAQS Clothing Store" />
 //         </div>
 //         <h1 className="mb-4 text-2xl font-bold">Admin Dashboard</h1>
 //         <form onSubmit={onSubmitHandler}>
@@ -106,11 +106,15 @@ const Login = ({ setToken }) => {
 
   return (
     <div className="flex items-center justify-center w-full min-h-screen">
-      <div className="max-w-md px-8 py-6 bg-white rounded-lg shadow-md">
-        <div className="mb-3 w-fit">
-          <img src={assets.logo} alt="ClassyShop" />
+      <div className="w-full max-w-md px-8 py-6 bg-white rounded-lg shadow-md">
+        <div className="flex justify-center mb-6">
+          <img
+            src={assets.logo}
+            className="w-[190px] object-contain"
+            alt="RAQS Clothing Store"
+          />
         </div>
-        <h1 className="mb-4 text-2xl font-bold">Admin Dashboard</h1>
+        <h1 className="mb-4 text-2xl font-bold text-center">RAQS Admin Dashboard</h1>
         <form onSubmit={onSubmitHandler}>
           <div className="mb-3 min-w-72">
             <p className="mb-2 text-sm font-medium text-gray-700">Email</p>
