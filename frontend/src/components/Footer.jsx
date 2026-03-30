@@ -37,10 +37,21 @@ const Footer = () => {
 
             <div>
                 <p className='mb-5 text-xl font-medium'>GET IN TOUCH</p>
-                <ul className='flex flex-col gap-1 text-gray-600'>
-                    <li>(+92)343-7807380</li>
-                    <li>farazkhan4861@gmail.com</li>
+                <ul className='flex flex-col gap-3 text-gray-600'>
+                    <li>(+92)348-4272036</li>
+                    <li>contact.raqs@gmail.com</li>
                 </ul>
+                <div className='flex gap-4 mt-5'>
+                    <a href='https://www.facebook.com/share/1KokPCVFKt/' target='_blank' rel='noopener noreferrer' className='text-2xl text-blue-600 hover:text-blue-800 transition'>
+                        <i className='fab fa-facebook'></i>
+                    </a>
+                    <a href='https://www.instagram.com/raqs_couture?igsh=MWZmNThjczZtOW5jbw==' target='_blank' rel='noopener noreferrer' className='text-2xl text-pink-600 hover:text-pink-800 transition'>
+                        <i className='fab fa-instagram'></i>
+                    </a>
+                    <a href='https://www.tiktok.com/@raqs_couture?_r=1&_t=ZS-9566cRMAQlD' target='_blank' rel='noopener noreferrer' className='text-2xl text-black hover:text-gray-700 transition'>
+                        <i className='fab fa-tiktok'></i>
+                    </a>
+                </div>
             </div>
         </div>
         <div>

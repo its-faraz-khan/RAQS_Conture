@@ -311,8 +311,19 @@ const ShopContextProvider = (props) => {
       });
 
       if (response.data.success) {
-        setProducts(response.data.products);
-        console.log("Products loaded:", response.data.products.length);
+        // Prepend backend URL to image paths
+        const productsWithFullImageUrls = response.data.products.map(product => ({
+          ...product,
+          image: product.image.map(img => {
+            if (img.startsWith('/uploads/')) {
+              return backendUrl + img;
+            }
+            return img;
+          })
+        }));
+        
+        setProducts(productsWithFullImageUrls);
+        console.log("Products loaded:", productsWithFullImageUrls.length);
       } else {
         console.error("Error response:", response.data.message);
       }
