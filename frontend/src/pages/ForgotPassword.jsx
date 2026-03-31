@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 import { ShopContext } from "../context/ShopContext";
 
 const stepDetails = {
@@ -45,7 +45,7 @@ const ForgotPassword = () => {
 
   const requestOtp = async (showResendMessage = false) => {
     if (!email.trim()) {
-      toast.error("Please enter your email");
+      notify("Please enter your email");
       return;
     }
 
@@ -60,14 +60,14 @@ const ForgotPassword = () => {
         setOtp("");
         setResetToken("");
         setStep("verify");
-        toast.success(
+        notify(
           showResendMessage ? "A fresh OTP has been sent to your email." : response.data.message
         );
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to send OTP");
+      notify(error.response?.data?.message || "Failed to send OTP");
     } finally {
       setLoading(false);
     }
@@ -75,7 +75,7 @@ const ForgotPassword = () => {
 
   const verifyOtp = async () => {
     if (!otp.trim()) {
-      toast.error("Please enter the OTP");
+      notify("Please enter the OTP");
       return;
     }
 
@@ -92,12 +92,12 @@ const ForgotPassword = () => {
         setPassword("");
         setConfirmPassword("");
         setStep("reset");
-        toast.success(response.data.message);
+        notify(response.data.message);
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to verify OTP");
+      notify(error.response?.data?.message || "Failed to verify OTP");
     } finally {
       setLoading(false);
     }
@@ -105,12 +105,12 @@ const ForgotPassword = () => {
 
   const submitNewPassword = async () => {
     if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      notify("Password must be at least 8 characters");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      notify("Passwords do not match");
       return;
     }
 
@@ -124,13 +124,13 @@ const ForgotPassword = () => {
       });
 
       if (response.data.success) {
-        toast.success(response.data.message);
+        notify(response.data.message);
         navigate("/login");
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to reset password");
+      notify(error.response?.data?.message || "Failed to reset password");
     } finally {
       setLoading(false);
     }

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
 import GoogleSignInButton from "../components/GoogleSignInButton";
@@ -84,7 +84,7 @@ const Login = () => {
     setToken(userToken);
     localStorage.setItem("token", userToken);
     await getUserCart(userToken);
-    toast.success(message);
+    notify(message);
     navigate("/");
   };
 
@@ -102,7 +102,7 @@ const Login = () => {
         if (response.data.success) {
           await completeLogin(response.data.token, "Sign up successful! Welcome to RAQS.");
         } else {
-          toast.error(response.data.message || "Signup failed. Please try again.");
+          notify(response.data.message || "Signup failed. Please try again.");
         }
 
         return;
@@ -116,10 +116,10 @@ const Login = () => {
       if (response.data.success) {
         await completeLogin(response.data.token, "Login successful! Welcome back.");
       } else {
-        toast.error(response.data.message || "Invalid email or password.");
+        notify(response.data.message || "Invalid email or password.");
       }
     } catch (error) {
-      toast.error(
+      notify(
         error.response?.data?.message ||
           (currentState === "Sign Up"
             ? "Signup failed. Please try again."
@@ -130,7 +130,7 @@ const Login = () => {
 
   const handleGoogleCredential = async (credential) => {
     if (!googleClientId) {
-      toast.error(
+      notify(
         "Google sign-in is not ready yet. If you already added GOOGLE_CLIENT_ID to backend/.env, restart the backend server and refresh this page."
       );
       return;
@@ -150,10 +150,10 @@ const Login = () => {
           response.data.message || "Google sign-in successful!"
         );
       } else {
-        toast.error(response.data.message || "Google sign-in failed.");
+        notify(response.data.message || "Google sign-in failed.");
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Google sign-in failed.");
+      notify(error.response?.data?.message || "Google sign-in failed.");
     } finally {
       setIsGoogleLoading(false);
     }
@@ -230,7 +230,7 @@ const Login = () => {
               disabled={isGoogleLoading}
               isConfigLoading={isGoogleConfigLoading}
               onCredential={handleGoogleCredential}
-              onError={(message) => toast.error(message)}
+              onError={(message) => notify(message)}
             />
           </div>
 

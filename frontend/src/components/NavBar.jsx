@@ -141,7 +141,7 @@ import { ShopContext } from '../context/ShopContext';
 
 const NavBar = () => {
     const [visible, setVisible] = useState(false);
-    const { setShowSearch, getCartCount, setCartItems, setToken } = useContext(ShopContext);
+    const { setShowSearch, getCartCount, setCartItems, setToken, setCartDrawerOpen } = useContext(ShopContext);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -219,12 +219,14 @@ const NavBar = () => {
                     </div>
                 </div>
 
-                <Link to='/cart' className='relative'>
+                <button onClick={() => setCartDrawerOpen(true)} className='relative'>
                     <img src={assets.cart_icon} className='w-5 min-w-5' alt="Cart" />
-                    <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
-                        {getCartCount()}
-                    </p>
-                </Link>
+                    {getCartCount() > 0 && (
+                        <p className='absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black text-white aspect-square rounded-full text-[8px]'>
+                            {getCartCount()}
+                        </p>
+                    )}
+                </button>
 
                 <img 
                     onClick={() => setVisible(true)} 

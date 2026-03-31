@@ -4,7 +4,7 @@
 // import { assets } from "../assets/assets";
 // import RelatedProducts from "../components/RelatedProducts";
 // import axios from "axios";
-// import { toast } from "react-toastify";
+// import notify from "../utils/notify";
 
 // const Product = () => {
 //   const { productId } = useParams();
@@ -25,7 +25,7 @@
 
 //   const handleAddToWishlist = () => {
 //     if (!token) {
-//       toast.error("Please login to add to wishlist");
+//       notify("Please login to add to wishlist");
 //       return;
 //     }
 //     setShowSubscribeModal(true);
@@ -33,7 +33,7 @@
 
 //   const handleWishlistSubscribe = async () => {
 //     if (!subscribeEmail) {
-//       toast.error("Please enter your email");
+//       notify("Please enter your email");
 //       return;
 //     }
 
@@ -49,15 +49,15 @@
 //       );
 
 //       if (response.data.success) {
-//         toast.success("Added to wishlist! You'll be notified when restocked.");
+//         notify("Added to wishlist! You'll be notified when restocked.");
 //         setShowSubscribeModal(false);
 //         setSubscribeEmail("");
 //       } else {
-//         toast.error(response.data.message);
+//         notify(response.data.message);
 //       }
 //     } catch (error) {
 //       console.error(error);
-//       toast.error("Something went wrong");
+//       notify("Something went wrong");
 //     }
 //   };
 
@@ -262,7 +262,7 @@ import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
 import SizeChart from "../components/SizeChart";
 import axios from "axios";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 
 const Product = () => {
   const { productId } = useParams();
@@ -273,18 +273,20 @@ const Product = () => {
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [subscribeEmail, setSubscribeEmail] = useState("");
   const [showSizeChart, setShowSizeChart] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const data = products.find((item) => item._id === productId);
     if (data) {
       setProductData(data);
       setImage(data.image[0]);
+      setQuantity(1);
     }
   }, [productId, products]);
 
   const handleAddToWishlist = () => {
     if (!token) {
-      toast.error("Please login to add to wishlist");
+      notify("Please login to add to wishlist");
       return;
     }
     setShowSubscribeModal(true);
@@ -292,7 +294,7 @@ const Product = () => {
 
   const handleWishlistSubscribe = async () => {
     if (!subscribeEmail) {
-      toast.error("Please enter your email");
+      notify("Please enter your email");
       return;
     }
 
@@ -308,15 +310,15 @@ const Product = () => {
       );
 
       if (response.data.success) {
-        toast.success("Added to wishlist! You'll be notified when restocked.");
+        notify("Added to wishlist! You'll be notified when restocked.");
         setShowSubscribeModal(false);
         setSubscribeEmail("");
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      notify("Something went wrong");
     }
   };
 
@@ -450,12 +452,34 @@ minute: "2-digit",
           </p>
         </div>
       ) : (
-        <button
-          onClick={() => addToCart(productData._id, size)}
-          className="px-8 py-3 text-sm text-white bg-black active:bg-gray-700"
-        >
-          ADD TO CART
-        </button>
+        <div className="flex flex-col gap-3">
+          {/* Quantity Selector */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-medium">Quantity</p>
+              <div className="flex items-center border border-gray-300">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                  className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 text-lg leading-none"
+                >–</button>
+                <span className="w-10 text-center text-sm font-medium">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(q => Math.min(productData.stock, q + 1))}
+                  className="w-8 h-8 flex items-center justify-center text-gray-600 hover:bg-gray-100 text-lg leading-none"
+                >+</button>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500">Max available: {productData.stock}</p>
+          </div>
+          <button
+            onClick={() => addToCart(productData._id, size, quantity)}
+            className="px-8 py-3 text-sm text-white bg-black active:bg-gray-700"
+          >
+            ADD TO CART
+          </button>
+        </div>
       )}
 
       <hr className="mt-8 sm:w-4/5" />
@@ -471,6 +495,7 @@ minute: "2-digit",
   {showSizeChart && (
     <SizeChart
       subCategory={productData.subCategory}
+      customChart={productData.sizeChart}
       onClose={() => setShowSizeChart(false)}
     />
   )}

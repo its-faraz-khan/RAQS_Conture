@@ -2,7 +2,7 @@
 // import { ShopContext } from "../context/ShopContext";
 // import Title from "../components/Title";
 // import axios from "axios";
-// import { toast } from "react-toastify";
+// import notify from "../utils/notify";
 
 // const Orders = () => {
 //   const { backendUrl, token, currency } = useContext(ShopContext);
@@ -35,7 +35,7 @@
 //       }
 //     } catch (error) {
 //       console.log(error);
-//       toast.error("Error loading orders");
+//       notify("Error loading orders");
 //     }
 //   };
 
@@ -121,7 +121,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import axios from "axios";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 
 const Orders = () => {
   const { backendUrl, token, currency } = useContext(ShopContext);
@@ -154,7 +154,7 @@ const Orders = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error("Error loading orders");
+      notify("Error loading orders");
     }
   };
 

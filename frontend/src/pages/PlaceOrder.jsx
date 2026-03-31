@@ -3,7 +3,7 @@
 // import CartTotal from "../components/CartTotal";
 // import { ShopContext } from "../context/ShopContext";
 // import axios from "axios";
-// import { toast } from "react-toastify";
+// import notify from "../utils/notify";
 
 // const PlaceOrder = () => {
 //   const [method, setMethod] = useState("cod");
@@ -72,7 +72,7 @@
 
 //     // Validate phone number
 //     if (!validatePhone(formData.phone)) {
-//       toast.error("Please enter a valid Pakistani phone number (e.g., +923001234567)");
+//       notify("Please enter a valid Pakistani phone number (e.g., +923001234567)");
 //       return;
 //     }
 
@@ -109,13 +109,13 @@
 //       if (response.data.success) {
 //         setCartItems({});
 //         navigate("/orders");
-//         toast.success("Order placed successfully!");
+//         notify("Order placed successfully!");
 //       } else {
-//         toast.error(response.data.message);
+//         notify(response.data.message);
 //       }
 //     } catch (error) {
 //       console.log(error);
-//       toast.error(error.message);
+//       notify(error.message);
 //     }
 //   };
 
@@ -272,7 +272,7 @@ import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { ShopContext } from "../context/ShopContext";
 import axios from "axios";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 
 const PlaceOrder = () => {
   const [method, setMethod] = useState("cod");
@@ -334,7 +334,7 @@ const PlaceOrder = () => {
     event.preventDefault();
 
     if (!validatePhone(formData.phone)) {
-      toast.error("Please enter a valid Pakistani phone number (e.g., +923001234567)");
+      notify("Please enter a valid Pakistani phone number (e.g., +923001234567)");
       return;
     }
 
@@ -371,13 +371,13 @@ const PlaceOrder = () => {
       if (response.data.success) {
         setCartItems({});
         navigate("/orders");
-        toast.success("Order placed successfully!");
+        notify("Order placed successfully!");
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      notify(error.message);
     }
   };
 

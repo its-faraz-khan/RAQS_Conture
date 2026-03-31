@@ -119,7 +119,7 @@ import fs from "fs";
 
 const addProduct = async (req, res) => {
   try {
-    const { name, description, price, category, subCategory, sizes, bestSeller, stock, discountPercent, discountExpiry, sizeType } = req.body;
+    const { name, description, price, category, subCategory, sizes, bestSeller, stock, discountPercent, discountExpiry, sizeType, sizeChart } = req.body;
 
     const image1 = req.files.image1 && req.files.image1[0];
     const image2 = req.files.image2 && req.files.image2[0];
@@ -163,7 +163,8 @@ const addProduct = async (req, res) => {
       discountPercent: Number(discountPercent) || 0,
       discountExpiry: discountExpiry ? new Date(discountExpiry) : null,
       hasDiscount: Number(discountPercent) > 0 && discountExpiry ? true : false,
-      sizeType: sizeType || 'standard'
+      sizeType: sizeType || 'standard',
+      sizeChart: sizeChart ? JSON.parse(sizeChart) : null
     };
 
     const product = new productModel(productData);

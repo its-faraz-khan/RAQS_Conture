@@ -90,17 +90,19 @@ import Orders from './pages/Orders'
 import NavBar from './components/NavBar'
 import Footer from './components/Footer'
 import SearchBar from './components/SearchBar'
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import ProtectedRoute from './components/ProtectedRoute'
+import CartDrawer from './components/CartDrawer'
+import Notification from './components/Notification'
+import WhatsAppButton from './components/WhatsAppButton'
 
 const App = () => {
   return (
     <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
-      <ToastContainer />
+      <Notification />
 
       <NavBar />
       <SearchBar />
+      <CartDrawer />
 
       <Routes>
         <Route path='/' element={<Home />} />
@@ -140,6 +142,7 @@ const App = () => {
         />
       </Routes>
 
+      <WhatsAppButton />
       <Footer />
     </div>
   )

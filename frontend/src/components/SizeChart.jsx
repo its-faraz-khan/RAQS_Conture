@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SizeChart = ({ subCategory, onClose }) => {
+const SizeChart = ({ subCategory, onClose, customChart }) => {
   const sizeCharts = {
     Topwear: {
       title: "Topwear Size Chart",
@@ -62,7 +62,11 @@ const SizeChart = ({ subCategory, onClose }) => {
     }
   };
 
-  const chart = sizeCharts[subCategory];
+  // Use the product-specific custom chart if it exists and has rows; fall back to default
+  const chart =
+    customChart && customChart.rows && customChart.rows.length > 0
+      ? customChart
+      : sizeCharts[subCategory];
 
   if (!chart) return null;
 

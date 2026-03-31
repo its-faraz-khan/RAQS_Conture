@@ -168,8 +168,8 @@
 
 
 import { createContext, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import notify from "../utils/notify";
 import axios from "axios";
 
 export const ShopContext = createContext();
@@ -182,53 +182,58 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [loading, setLoading] = useState(true);
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
   const navigate = useNavigate();
 
   const currency = "Rs";
   const delivery_fee = 250;
 
-  const addToCart = async (itemId, size) => {
+  const addToCart = async (itemId, size, quantity = 1) => {
     if (!size) {
-      toast.error("Please Select a Size");
+      notify("Please select a size");
       return;
     }
 
     const product = products.find((item) => item._id === itemId);
     if (product && product.stock === 0) {
-      toast.error("This product is out of stock");
+      notify("This product is out of stock");
       return;
     }
 
     let cartData = structuredClone(cartItems);
+    let newQty;
 
     if (cartData[itemId]) {
       if (cartData[itemId][size]) {
-        cartData[itemId][size] += 1;
+        newQty = cartData[itemId][size] + quantity;
       } else {
-        cartData[itemId][size] = 1;
+        newQty = quantity;
       }
+      cartData[itemId][size] = newQty;
     } else {
       cartData[itemId] = {};
-      cartData[itemId][size] = 1;
+      newQty = quantity;
+      cartData[itemId][size] = quantity;
     }
 
     setCartItems(cartData);
+    setCartDrawerOpen(true);
 
     // Sync with backend if user is logged in
     if (token) {
       try {
         await axios.post(
-          backendUrl + "/api/cart/add",
-          { itemId, size },
+          backendUrl + "/api/cart/update",
+          { itemId, size, quantity: newQty },
           { headers: { token } }
         );
       } catch (error) {
         console.error(error);
-        toast.error("Failed to sync cart");
+        notify("Cart sync failed");
       }
     }
 
-    toast.success("Item Added To The Cart");
+    notify("Added to cart");
   };
 
   const getCartCount = () => {
@@ -268,7 +273,7 @@ const ShopContextProvider = (props) => {
         );
       } catch (error) {
         console.error(error);
-        toast.error("Failed to update cart");
+        notify("Failed to update cart");
       }
     }
   };
@@ -349,7 +354,18 @@ const ShopContextProvider = (props) => {
       );
 
       if (response.data.success) {
-        setCartItems(response.data.cartData);
+        const raw = response.data.cartData || {};
+        // Strip out any size entries with quantity <= 0 to avoid ghost badge counts
+        const clean = {};
+        for (const itemId in raw) {
+          for (const size in raw[itemId]) {
+            if (raw[itemId][size] > 0) {
+              if (!clean[itemId]) clean[itemId] = {};
+              clean[itemId][size] = raw[itemId][size];
+            }
+          }
+        }
+        setCartItems(clean);
       }
     } catch (error) {
       console.error(error);
@@ -388,6 +404,8 @@ const ShopContextProvider = (props) => {
     setToken,
     token,
     loading,
+    cartDrawerOpen,
+    setCartDrawerOpen,
   };
 
   return (

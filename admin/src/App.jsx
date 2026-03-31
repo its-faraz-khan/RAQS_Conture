@@ -75,8 +75,7 @@ import Add from "./pages/Add";
 import List from "./pages/List";
 import Orders from "./pages/Orders";
 import Login from "./components/Login";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import Notification from "./components/Notification";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
@@ -94,18 +93,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+      <Notification />
       {token === "" ? (
         <Login setToken={setToken} />
       ) : (

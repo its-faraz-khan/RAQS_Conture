@@ -34,7 +34,7 @@
 
 import React, { useState } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 
 const NewsLetterBox = () => {
   const [email, setEmail] = useState("");
@@ -44,7 +44,7 @@ const NewsLetterBox = () => {
     event.preventDefault();
     
     if (!email) {
-      toast.error("Please enter your email");
+      notify("Please enter your email");
       return;
     }
 
@@ -57,14 +57,14 @@ const NewsLetterBox = () => {
       );
 
       if (response.data.success) {
-        toast.success(response.data.message);
+        notify(response.data.message);
         setEmail("");
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong. Please try again.");
+      notify("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }

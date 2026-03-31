@@ -13,7 +13,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl } from "../App";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 import { assets } from "../assets/assets";
 
 const Orders = ({ token }) => {
@@ -34,11 +34,11 @@ const Orders = ({ token }) => {
       if (response.data.success) {
         setOrders(response.data.orders.reverse());
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching orders");
+      notify("Error fetching orders");
     }
   };
 
@@ -51,12 +51,12 @@ const Orders = ({ token }) => {
       );
 
       if (response.data.success) {
-        toast.success("Order status updated");
+        notify("Order status updated");
         await fetchAllOrders();
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating status");
+      notify("Error updating status");
     }
   };
 

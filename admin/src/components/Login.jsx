@@ -2,7 +2,7 @@
 // import { assets } from "../assets/assets";
 // import axios from "axios";
 // import { backendUrl } from "../App";
-// import { toast } from "react-toastify";
+// import notify from "../utils/notify";
 
 // const Login = ({ setToken }) => {
 //   const [email, setEmail] = useState("");
@@ -18,11 +18,11 @@
 //   // Check credentials locally (no backend)
 //   if (email === hardcodedEmail && password === hardcodedPassword) {
 //     setToken("dummy-admin-token");
-//     toast.success("Login successful (development mode).");
+//     notify("Login successful (development mode).");
 //     return;
 //   }
 
-//   toast.error("Invalid admin email or password.");
+//   notify("Invalid admin email or password.");
 // };
 
 
@@ -77,7 +77,7 @@ import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import { backendUrl } from "../App";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState("");
@@ -94,13 +94,13 @@ const Login = ({ setToken }) => {
 
       if (response.data.success) {
         setToken(response.data.token);
-        toast.success("Login successful!");
+        notify("Login successful!");
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Login failed. Please check your credentials.");
+      notify("Login failed. Please check your credentials.");
     }
   };
 

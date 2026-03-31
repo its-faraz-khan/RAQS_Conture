@@ -16,11 +16,11 @@
 //       if (response.data.success) {
 //         setListProducts(response.data.products);
 //       } else {
-//         toast.error(response.data.message);
+//         notify(response.data.message);
 //       }
 //     } catch (error) {
 //       console.error(error);
-//       toast.error("Error fetching products");
+//       notify("Error fetching products");
 //     }
 //   };
 
@@ -33,14 +33,14 @@
 //       );
 
 //       if (response.data.success) {
-//         toast.info(response.data.message);
+//         notify(response.data.message);
 //         await fetchListProducts();
 //       } else {
-//         toast.error(response.data.message);
+//         notify(response.data.message);
 //       }
 //     } catch (error) {
 //       console.error(error);
-//       toast.error("Error removing product");
+//       notify("Error removing product");
 //     }
 //   };
 
@@ -63,16 +63,16 @@
 //       );
 
 //       if (response.data.success) {
-//         toast.success("Stock updated successfully!");
+//         notify("Stock updated successfully!");
 //         setEditingProduct(null);
 //         setEditStock("");
 //         await fetchListProducts();
 //       } else {
-//         toast.error(response.data.message);
+//         notify(response.data.message);
 //       }
 //     } catch (error) {
 //       console.error(error);
-//       toast.error("Error updating stock");
+//       notify("Error updating stock");
 //     }
 //   };
 
@@ -180,7 +180,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl } from "../App";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
 
 const List = ({ token }) => {
   const [listProducts, setListProducts] = useState([]);
@@ -197,11 +197,11 @@ const List = ({ token }) => {
       if (response.data.success) {
         setListProducts(response.data.products);
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error fetching products");
+      notify("Error fetching products");
     }
   };
 
@@ -214,14 +214,14 @@ const List = ({ token }) => {
       );
 
       if (response.data.success) {
-        toast.info(response.data.message);
+        notify(response.data.message);
         await fetchListProducts();
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error removing product");
+      notify("Error removing product");
     }
   };
 
@@ -244,16 +244,16 @@ const List = ({ token }) => {
       );
 
       if (response.data.success) {
-        toast.success("Stock updated successfully!");
+        notify("Stock updated successfully!");
         setEditingProduct(null);
         setEditStock("");
         await fetchListProducts();
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating stock");
+      notify("Error updating stock");
     }
   };
 
@@ -286,17 +286,17 @@ const List = ({ token }) => {
       );
 
       if (response.data.success) {
-        toast.success("Discount updated successfully!");
+        notify("Discount updated successfully!");
         setEditingDiscount(null);
         setEditDiscountPercent("");
         setEditDiscountExpiry("");
         await fetchListProducts();
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error updating discount");
+      notify("Error updating discount");
     }
   };
 
@@ -313,14 +313,14 @@ const List = ({ token }) => {
       );
 
       if (response.data.success) {
-        toast.success("Discount removed!");
+        notify("Discount removed!");
         await fetchListProducts();
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Error removing discount");
+      notify("Error removing discount");
     }
   };
 

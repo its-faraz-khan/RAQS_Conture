@@ -2,7 +2,7 @@
 // import { assets } from "../assets/assets";
 // import axios from "axios";
 // import { backendUrl } from "../App";
-// import { toast } from "react-toastify";
+// import notify from "../utils/notify";
 
 // const Add = ({ token }) => {
 //   const [image1, setImage1] = useState(null);
@@ -49,14 +49,14 @@
 //       );
 
 //       if (response.data.success) {
-//         toast.success(response.data.message);
+//         notify(response.data.message);
 //         resetForm();
 //       } else {
-//         toast.error(response.data.message);
+//         notify(response.data.message);
 //       }
 //     } catch (error) {
 //       console.error(error);
-//       toast.error("Something went wrong");
+//       notify("Something went wrong");
 //     }
 //   };
 
@@ -336,7 +336,38 @@ import React, { useState } from "react";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import { backendUrl } from "../App";
-import { toast } from "react-toastify";
+import notify from "../utils/notify";
+
+// Default size charts — matches the frontend SizeChart component exactly
+const DEFAULT_SIZE_CHARTS = {
+  Topwear: {
+    title: "Topwear Size Chart",
+    headers: ["Size", "Chest (inches)", "Length (inches)", "Shoulder (inches)"],
+    rows: [["S","36-38","27","17"],["M","38-40","28","18"],["L","40-42","29","19"],["XL","42-44","30","20"],["XXL","44-46","31","21"]]
+  },
+  Bottomwear: {
+    title: "Bottomwear Size Chart",
+    headers: ["Size", "Waist (inches)", "Hip (inches)", "Length (inches)"],
+    rows: [["S","28-30","36-38","39"],["M","30-32","38-40","40"],["L","32-34","40-42","41"],["XL","34-36","42-44","42"],["XXL","36-38","44-46","43"]]
+  },
+  Winterwear: {
+    title: "Winterwear Size Chart",
+    headers: ["Size", "Chest (inches)", "Length (inches)", "Sleeve (inches)"],
+    rows: [["S","38-40","28","24"],["M","40-42","29","25"],["L","42-44","30","26"],["XL","44-46","31","27"],["XXL","46-48","32","28"]]
+  },
+  Summerwear: {
+    title: "Summerwear Size Chart",
+    headers: ["Size", "Chest (inches)", "Length (inches)", "Shoulder (inches)"],
+    rows: [["S","36-38","26","16"],["M","38-40","27","17"],["L","40-42","28","18"],["XL","42-44","29","19"],["XXL","44-46","30","20"]]
+  },
+  Footwear: {
+    title: "Footwear Size Chart",
+    headers: ["UK Size", "EU Size", "US Size", "Foot Length (cm)"],
+    rows: [["5","38","6","24.1"],["6","39","7","24.8"],["7","40","8","25.4"],["8","42","9","26.7"],["9","43","10","27.3"],["10","44","11","27.9"],["11","45","12","28.6"],["12","46","13","29.2"]]
+  }
+};
+
+const EMPTY_CHART = { title: "", headers: [], rows: [] };
 
 const Add = ({ token }) => {
   const [image1, setImage1] = useState(null);
@@ -354,6 +385,7 @@ const Add = ({ token }) => {
   const [bestSeller, setBestSeller] = useState(false);
   const [discountPercent, setDiscountPercent] = useState("");
   const [discountExpiry, setDiscountExpiry] = useState("");
+  const [sizeChart, setSizeChart] = useState(EMPTY_CHART);
 
   // Footwear sizes with UK and EU
   const footwearSizes = [
@@ -393,6 +425,10 @@ const Add = ({ token }) => {
       formData.append("discountPercent", discountPercent || 0);
       formData.append("discountExpiry", discountExpiry || "");
       formData.append("sizeType", isFootwear ? "footwear" : "standard");
+      // Save size chart only when it has rows; otherwise backend defaults to null (frontend falls back to defaults)
+      if (sizeChart.rows.length > 0) {
+        formData.append("sizeChart", JSON.stringify(sizeChart));
+      }
 
       const response = await axios.post(
         backendUrl + "/api/product/add",
@@ -401,14 +437,14 @@ const Add = ({ token }) => {
       );
 
       if (response.data.success) {
-        toast.success(response.data.message);
+        notify(response.data.message);
         resetForm();
       } else {
-        toast.error(response.data.message);
+        notify(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error("Something went wrong");
+      notify("Something went wrong");
     }
   };
 
@@ -427,7 +463,41 @@ const Add = ({ token }) => {
     setBestSeller(false);
     setDiscountPercent("");
     setDiscountExpiry("");
+    setSizeChart(EMPTY_CHART);
   };
+
+  // ── Size chart helpers ────────────────────────────────────────────────────
+  const updateChartCell = (rowIndex, colIndex, value) => {
+    setSizeChart((prev) => ({
+      ...prev,
+      rows: prev.rows.map((row, rIdx) =>
+        rIdx === rowIndex
+          ? row.map((cell, cIdx) => (cIdx === colIndex ? value : cell))
+          : row
+      ),
+    }));
+  };
+
+  const addChartRow = () => {
+    setSizeChart((prev) => ({
+      ...prev,
+      rows: [...prev.rows, new Array(prev.headers.length).fill("")],
+    }));
+  };
+
+  const removeChartRow = (rowIndex) => {
+    setSizeChart((prev) => ({
+      ...prev,
+      rows: prev.rows.filter((_, idx) => idx !== rowIndex),
+    }));
+  };
+
+  const resetChartToDefault = () => {
+    if (DEFAULT_SIZE_CHARTS[subCategory]) {
+      setSizeChart(JSON.parse(JSON.stringify(DEFAULT_SIZE_CHARTS[subCategory])));
+    }
+  };
+  // ─────────────────────────────────────────────────────────────────────────
 
   const toggleSize = (size) => {
     if (isFootwear) {
@@ -556,8 +626,15 @@ const Add = ({ token }) => {
           <p className="mb-2 text-lg font-semibold">Product Sub Category</p>
           <select
             onChange={(e) => {
-              setSubCategory(e.target.value);
-              setSizes([]); // Reset sizes when subcategory changes
+              const val = e.target.value;
+              setSubCategory(val);
+              setSizes([]);
+              // Auto-load the default size chart for this subcategory
+              setSizeChart(
+                DEFAULT_SIZE_CHARTS[val]
+                  ? JSON.parse(JSON.stringify(DEFAULT_SIZE_CHARTS[val]))
+                  : EMPTY_CHART
+              );
             }}
             value={subCategory}
             className="w-full px-3 py-2 border-gray-500 max-w-[500px]"
@@ -634,6 +711,86 @@ const Add = ({ token }) => {
           </div>
         </div>
       </div>
+
+      {/* ── Size Chart Editor ─────────────────────────────────────────────── */}
+      <div className="w-full p-4 mt-4 border-2 border-blue-300 rounded-lg bg-blue-50">
+        <p className="mb-3 text-lg font-semibold text-blue-700">Size Chart</p>
+        {!subCategory ? (
+          <p className="text-sm text-gray-400 italic">
+            Select a Sub Category above to load the default size chart for editing.
+          </p>
+        ) : sizeChart.headers.length === 0 ? (
+          <p className="text-sm text-gray-400 italic">No size chart available for this category.</p>
+        ) : (
+        <div className="w-full">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <p className="text-sm font-medium text-blue-600">{sizeChart.title}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-gray-500 italic">Auto-loaded · edit freely</p>
+              <button
+                type="button"
+                onClick={resetChartToDefault}
+                className="px-3 py-1 text-xs text-blue-600 border border-blue-400 rounded hover:bg-blue-100"
+              >
+                Reset to Default
+              </button>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr>
+                  {sizeChart.headers.map((header, hIdx) => (
+                    <th
+                      key={hIdx}
+                      className="border border-gray-300 bg-gray-100 px-3 py-2 text-left text-xs font-semibold text-gray-600 whitespace-nowrap"
+                    >
+                      {header}
+                    </th>
+                  ))}
+                  <th className="border border-gray-300 bg-gray-100 px-2 py-2 w-8" />
+                </tr>
+              </thead>
+              <tbody>
+                {sizeChart.rows.map((row, rIdx) => (
+                  <tr key={rIdx} className={rIdx % 2 === 0 ? "bg-white" : "bg-blue-50/40"}>
+                    {row.map((cell, cIdx) => (
+                      <td key={cIdx} className="border border-gray-200 p-1">
+                        <input
+                          type="text"
+                          value={cell}
+                          onChange={(e) => updateChartCell(rIdx, cIdx, e.target.value)}
+                          className="w-full min-w-[60px] px-2 py-1 text-sm bg-white border border-gray-300 rounded focus:outline-none focus:border-blue-400"
+                        />
+                      </td>
+                    ))}
+                    <td className="border border-gray-200 p-1 text-center">
+                      <button
+                        type="button"
+                        onClick={() => removeChartRow(rIdx)}
+                        className="text-red-400 hover:text-red-600 font-bold text-lg leading-none px-1"
+                        title="Remove row"
+                      >
+                        ×
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <button
+            type="button"
+            onClick={addChartRow}
+            className="mt-3 px-4 py-1.5 text-sm text-blue-700 border border-blue-400 rounded hover:bg-blue-100 transition-colors"
+          >
+            + Add Row
+          </button>
+        </div>
+        )}
+      </div>
+      {/* ──────────────────────────────────────────────────────────────────── */}
 
       <div>
         <p className="mb-2 text-lg font-semibold">
