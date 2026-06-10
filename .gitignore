@@ -1,17 +1,17 @@
-# node modules
-node_modules
-*/node_modules
+# # node modules
+# node_modules
+# */node_modules
 
-# environment variables
-.env
-*/.env
+# # environment variables
+# .env
+# */.env
 
-# build folders
-dist
-build
+# # build folders
+# dist
+# build
 
-# vite cache
-.vite
+# # vite cache
+# .vite
 
-.future-enhancements.md
-*/.future-enhancements.md
+# .future-enhancements.md
+# */.future-enhancements.md
